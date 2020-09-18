@@ -27,6 +27,8 @@ git config --global user.email "email_address"
 建议你下载Notepad++代替记事本，不但功能强大，而且免费！
 记得把Notepad++的默认编码设置为UTF-8 without BOM即可：
 然后接下来先git add filename 可一次性多加几个，然后git commit -m "xiugai"
-
+git status命令可以让我们时刻掌握仓库当前的状态，上面的命令输出告诉我们，readme.txt被修改过了，但还没有准备提交的修改。
+虽然Git告诉我们readme.txt被修改了，但如果能看看具体修改了什么内容
+需要用git diff这个命令看看
 
 
