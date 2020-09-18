@@ -26,5 +26,7 @@ git config --global user.email "email_address"
 明正确的程序一编译就报语法错误，等等，都是由记事本的弱智行为带来的。
 建议你下载Notepad++代替记事本，不但功能强大，而且免费！
 记得把Notepad++的默认编码设置为UTF-8 without BOM即可：
+然后接下来先git add filename 可一次性多加几个，然后git commit -m "xiugai"
+
 
 
