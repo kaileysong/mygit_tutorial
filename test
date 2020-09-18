@@ -163,3 +163,8 @@ $ git switch -c dev
 
 $ git switch master
 
+
+master分支和feature1分支各自都分别有新的提交,这样就会产生冲突
+这种情况下，Git无法执行“快速合并”，只能试图把各自的修改合并起来，但这种合并就可能会有冲突
+必须手动解决冲突后再提交，git status可以告诉冲突的文件
+
