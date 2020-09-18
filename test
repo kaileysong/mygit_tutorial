@@ -167,4 +167,56 @@ $ git switch master
 master分支和feature1分支各自都分别有新的提交,这样就会产生冲突
 这种情况下，Git无法执行“快速合并”，只能试图把各自的修改合并起来，但这种合并就可能会有冲突
 必须手动解决冲突后再提交，git status可以告诉冲突的文件
+通常，合并分支时，如果可能，Git会用Fast forward模式，但这种模式下，删除分支后，会丢掉分支信息。
 
+如果要强制禁用Fast forward模式，Git就会在merge时生成一个新的commit，
+这样，从分支历史上就可以看出分支信息。
+准备合并dev分支，请注意--no-ff参数，表示禁用Fast forward：
+
+$ git merge --no-ff -m "merge with no-ff" dev
+因为本次合并要创建一个新的commit，所以加上-m参数，把commit描述写进去。
+在实际开发中，我们应该按照几个基本原则进行分支管理：
+
+首先，master分支应该是非常稳定的，也就是仅用来发布新版本，平时不能在上面干活；
+
+那在哪干活呢？干活都在dev分支上，也就是说，dev分支是不稳定的，到某个时候，比如1.0版本发布时，再把dev分支合并到master上，在master分支发布1.0版本；
+
+你和你的小伙伴们每个人都在dev分支上干活，每个人都有自己的分支，时不时地往dev分支上合并就可以了。
+总结：合并分支时，加上--no-ff参数就可以用普通模式合并，合并后的历史有分支，能看出来曾经做过合并，
+而fast forward合并就看不出来曾经做过合并。
+
+接下来是分支的一个运用
+当前在dev上工作，但还没提交，但又要去处理一个101的bug，先用stash将当前工作现场“存储”起来：
+git stash
+然后确定在哪个分支上修复101，加入是master，就先切换到master
+git checkout master
+然后创建101分支：
+git checkout -b 101
+然后就修改该bug，提交。然后切换回master，完成合并，删除101分支
+git checkout master 
+git merge --no-ff -m "merged bug fix 101" 101
+git branch -d 101
+这是可以回到dev继续工作
+git checkout dev
+然后使用git stash list查看现场保存情况
+恢复的话有两种方式：1，git stach apply stash@{0} 即恢复指定stash。然后还要用
+git stash drop 来删除指定stash
+2，git stash pop恢复的同时也把stash删除了
+
+在master分支上修复了bug后，我们要想一想，dev分支是早期从master分支分出来的，所以，这个bug其实在当前dev分支上也存在。
+
+那怎么在dev分支上修复同样的bug？重复操作一次，提交不就行了？
+
+有木有更简单的方法？
+
+有！
+
+同样的bug，要在dev上修复，我们只需要把4c805e2 fix bug 101这个提交所做的修改“复制”到dev分支。注意：我们只想复制4c805e2 fix bug 101
+这个提交所做的修改，并不是把整个master分支merge过来。
+为了方便操作，Git专门提供了一个cherry-pick命令，让我们能复制一个特定的提交到当前分支：
+Git自动给dev分支做了一次提交，注意这次提交的commit是1d4b803，它并不同于master的4c805e2，因为这两个commit只是改动相同，但确实是两个不同的commit。
+用git cherry-pick，我们就不需要在dev分支上手动再把修bug的过程重复一遍。
+
+有些聪明的童鞋会想了，既然可以在master分支上修复bug后，在dev分支上可以“重放”这个修复过程，那么直接在dev分支上修复bug，
+然后在master分支上“重放”行不行？当然可以，不过你仍然需要git stash命令保存现场，
+才能从dev分支切换到master分支。
